@@ -1,0 +1,1 @@
+Append-only Log: Create an append-only log file to write SET and DEL commands. This is crucial for crash recovery. Compaction: Implement a separate process to periodically "compact" the log file by merging and removing old, overwritten entries. Recovery: Write a function that reads the log file on startup and rebuilds the in memory state of the store.

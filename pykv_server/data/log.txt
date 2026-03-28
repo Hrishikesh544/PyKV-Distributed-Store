@@ -1,0 +1,8 @@
+SET k2 2
+SET k3 3
+SET k4 4
+SET k5 5
+SET k6 6
+SET k7 7
+SET k8 8
+SET k1 1

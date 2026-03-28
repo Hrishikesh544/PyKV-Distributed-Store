@@ -1,0 +1,18 @@
+PYDANTIC
+ 
+1.LRU Cache (Main Task)
+ 
+2.Integrate LRU into Store
+ 
+3.Request Validation using Pydantic
+ 
+Store keys
+
+ Retrieve keys
+
+ Delete keys
+
+ Automatically remove least-used keys when full
+
+ Reject invalid API inputs
+ 

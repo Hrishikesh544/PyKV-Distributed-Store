@@ -1,0 +1,405 @@
+/* ===============================
+   GLOBAL RESET
+================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: url("/static/images/bg3.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: #ffffff;
+}
+
+/* Overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 5, 46, 0.52),
+        rgba(0, 11, 36, 0.55)
+    );
+    z-index: -1;
+}
+
+/* ===============================
+   LOGIN PAGE
+================================= */
+
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    padding: 45px;
+    border-radius: 18px;
+    width: 420px;
+    border: 1px solid rgba(255,255,255,0.1);
+    animation: glowPulse 3s infinite ease-in-out;
+}
+
+/* Glow Animation */
+@keyframes glowPulse {
+    0% {
+        box-shadow:
+            0 0 20px rgba(59,130,246,0.6),
+            0 0 40px rgba(0, 11, 34, 0.4);
+    }
+    50% {
+        box-shadow:
+            0 0 30px rgba(59,130,246,0.9),
+            0 0 60px rgba(0, 11, 34, 0.4);
+    }
+    100% {
+        box-shadow:
+            0 0 20px rgba(59,130,246,0.6),
+            0 0 40px rgba(0, 11, 34, 0.4);
+    }
+}
+
+.auth-card:hover {
+    transform: scale(1.01);
+    transition: 0.3s ease;
+}
+
+.logo {
+    font-size: 34px;
+    font-weight: 800;
+    text-align: center;
+    background: linear-gradient(to right, #00f5ff, #ff00c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+
+/* ===============================
+   FORM
+================================= */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 13px;
+    color: #e2e8f0;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 5px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+
+input::placeholder {
+    color: #cbd5e1;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #00f5ff;
+}
+
+/* ===============================
+   BUTTONS
+================================= */
+
+button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+    margin-top: 10px;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+.small {
+    width: auto;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #00f5ff, #ff00c8);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #00f5ff;
+}
+
+.btn-secondary {
+    background: linear-gradient(90deg, #3b82f6, #6366f1);
+    color: white;
+}
+
+.btn-secondary:hover {
+    transform: scale(1.05);
+}
+
+.btn-danger {
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: scale(1.05);
+}
+
+/* ===============================
+   DASHBOARD LAYOUT
+================================= */
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #1e3a8a, #7e22ce);
+    padding: 30px;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+}
+
+.sidebar-sub {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-bottom: 25px;
+}
+
+.nav-link {
+    display: block;
+    color: #e0f2fe;
+    text-decoration: none;
+    padding: 10px 0;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.nav-link:hover {
+    color: #ffffff;
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+}
+
+/* ===============================
+   TOPBAR
+================================= */
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.topbar h1 {
+    font-size: 26px;
+    background: linear-gradient(to right, #00f5ff, #ff00c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.store-count {
+    background: linear-gradient(90deg, #00f5ff, #6366f1);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+/* ===============================
+   GRID + CARDS
+================================= */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(0,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    color: #00f5ff;
+}
+
+.card p {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.card hr {
+    border: none;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* ===============================
+   TABLE
+================================= */
+
+.kv-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.kv-table th,
+.kv-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.kv-table th {
+    color: #00f5ff;
+    text-align: left;
+}
+
+.kv-table tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* ===============================
+   ALERTS
+================================= */
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+.alert.error {
+    background: #e74c3c;
+    border-left: 5px solid #c0392b;
+}
+
+.alert.success {
+    background: #2ecc71;
+    border-left: 5px solid #27ae60;
+}
+
+.alert.warning {
+    background: #f39c12;
+}
+
+/* ===============================
+   STATUS BADGES (NEW)
+================================= */
+
+.status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 6px;
+}
+
+.status-primary {
+    background: rgba(0, 245, 255, 0.15);
+    color: #00f5ff;
+    border: 1px solid rgba(0, 245, 255, 0.3);
+}
+
+.status-replica {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.status-connected {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.status-down {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* ===============================
+   UTILITY
+================================= */
+
+.muted {
+    color: #cbd5e1;
+    font-size: 14px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        width: 200px;
+        padding: 20px;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .topbar h1 {
+        font-size: 20px;
+    }
+}
