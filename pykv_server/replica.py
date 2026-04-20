@@ -1,21 +1,23 @@
 from fastapi import FastAPI, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, ValidationError
 from collections import OrderedDict
 
 import os
+import asyncio
 import threading
 import time
-import requests   # ✅ NEW (for replication)
+import requests
+import json  # ✅ Added JSON import for SSE serialization
 
 app = FastAPI()
 
 # -----------------------------
 # CONFIG (Replication)
 # -----------------------------
-IS_PRIMARY = False  # 🔁 Change to False in replica server
+IS_PRIMARY = False  # 🔁 Replica Node
 REPLICA_URL = "http://localhost:8001"
 
 # -----------------------------
@@ -146,6 +148,26 @@ def replicate_to_secondary(method: str, key: str, value: str = None):
     except requests.exceptions.RequestException:
         print("⚠️ Replica unavailable (continuing)")
 
+# -----------------------------
+# LIVE LOG STREAMING (SSE)
+# -----------------------------
+@app.get("/stream-log")
+async def stream_log():
+    """Streams the log file content to the frontend live."""
+    async def log_generator():
+        last_size = 0
+        while True:
+            if os.path.exists(LOG_FILE):
+                current_size = os.path.getsize(LOG_FILE)
+                if current_size != last_size:
+                    with open(LOG_FILE, "r") as f:
+                        content = f.read()
+                        # ✅ FIXED: Serialize content to safely pass newlines over SSE
+                        yield f"data: {json.dumps(content)}\n\n"
+                    last_size = current_size
+            await asyncio.sleep(1) 
+
+    return StreamingResponse(log_generator(), media_type="text/event-stream")
 
 # -----------------------------
 # Login
@@ -211,7 +233,8 @@ async def add_item(request: Request, key: str = Form(...), value: str = Form(...
             "request": request,
             "store": lru_store.all_items(),
             "message": message,
-            "msg_type": msg_type
+            "msg_type": msg_type,
+            "is_primary": IS_PRIMARY
         }
     )
 
@@ -228,7 +251,8 @@ async def delete_item(request: Request, key: str = Form(...)):
                 "request": request,
                 "store": lru_store.all_items(),
                 "message": "Key not found",
-                "msg_type": "error"
+                "msg_type": "error",
+                "is_primary": IS_PRIMARY
             }
         )
 
@@ -243,11 +267,35 @@ async def delete_item(request: Request, key: str = Form(...)):
             "request": request,
             "store": lru_store.all_items(),
             "message": "Key deleted successfully",
-            "msg_type": "success"
+            "msg_type": "success",
+            "is_primary": IS_PRIMARY
         }
     )
 
+# -----------------------------
+# Search Key
+# -----------------------------
+@app.post("/search")
+async def search_item(request: Request, key: str = Form(...)):
+    value = lru_store.get(key)
+    
+    if value is None:
+        message = f"Key '{key}' not found."
+        msg_type = "error"
+    else:
+        message = f"Found! Key: {key} | Value: {value}"
+        msg_type = "success"
 
+    return templates.TemplateResponse(
+        "dashboard.html",
+        {
+            "request": request,
+            "store": lru_store.all_items(),
+            "message": message,
+            "msg_type": msg_type,
+            "is_primary": IS_PRIMARY
+        }
+    )
 # -----------------------------
 # API (Primary)
 # -----------------------------
