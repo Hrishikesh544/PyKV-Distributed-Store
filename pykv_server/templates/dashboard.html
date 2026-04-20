@@ -3,56 +3,41 @@
 
 <head>
     <title>PyKV | Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css?v=4">
+    <link rel="stylesheet" href="/static/style.css?v=5">
 </head>
 
 <body>
 
 <div class="layout">
 
-    <!-- Sidebar -->
     <aside class="sidebar">
-
         <div class="logo">PyKV</div>
         <div class="sidebar-sub">Distributed KV Store</div>
-
         <nav>
             <a href="/dashboard" class="nav-link active">Dashboard</a>
             <a href="/" class="nav-link">Logout</a>
         </nav>
-
     </aside>
 
-
-    <!-- Main Content -->
     <main class="main-content">
 
         <header class="topbar">
-
             <h1>Key-Value Store Dashboard</h1>
-
             <div class="store-count">
                 {{ store|length }} / 10 Keys Stored
             </div>
-
         </header>
 
-
-        <!-- Notification -->
         {% if message %}
         <div class="alert {{ msg_type }}">
             {{ message }}
         </div>
         {% endif %}
 
-
-        <!-- Feature Grid -->
         <div class="grid">
 
-            <!-- Add Key -->
             <div class="card">
                 <h3>Add Key-Value</h3>
-
                 <form method="post" action="/add">
                     <input type="text" name="key" placeholder="Key" required>
                     <input type="text" name="value" placeholder="Value" required>
@@ -60,98 +45,50 @@
                 </form>
             </div>
 
-
-            <!-- Search Key -->
             <div class="card">
                 <h3>Search Key</h3>
-
                 <form method="post" action="/search">
                     <input type="text" name="key" placeholder="Key" required>
                     <button type="submit" class="btn-secondary">Search</button>
                 </form>
             </div>
 
-
-            <!-- Delete Key -->
             <div class="card">
                 <h3>Delete Key</h3>
-
                 <form method="post" action="/delete">
                     <input type="text" name="key" placeholder="Key" required>
                     <button type="submit" class="btn-danger">Delete</button>
                 </form>
             </div>
 
-
-            <!-- System Status -->
             <div class="card">
-
                 <h3>System Status</h3>
-
-                <p>
-                    Node Role:
-                    <strong>
-                        {% if is_primary %}
-                            Primary
-                        {% else %}
-                            Replica
-                        {% endif %}
-                    </strong>
+                <p>Node Role: 
+                    <strong>{% if is_primary %}Primary{% else %}Replica{% endif %}</strong>
                 </p>
-
-                <p>
-                    Replication:
-                    <strong>
-                        {% if is_primary %}
-                            Active (Pushing to Replica)
-                        {% else %}
-                            Passive (Receiving Updates)
-                        {% endif %}
-                    </strong>
+                <p>Replication: 
+                    <strong>{% if is_primary %}Active (Pushing to Replica){% else %}Passive (Receiving Updates){% endif %}</strong>
                 </p>
-
-                <p>
-                    Replica Status:
-                    <strong>
-                        {% if replica_alive %}
-                            Connected
-                        {% else %}
-                            Down / Not Reachable
-                        {% endif %}
-                    </strong>
-                </p>
-
                 <hr style="margin: 10px 0; opacity: 0.3;">
-
-                <p>
-                    Storage Mode:
-                    <strong>Append-Only Log (AOF)</strong>
-                </p>
-
-                <p>
-                    Crash Recovery:
-                    <strong>Enabled</strong>
-                </p>
-
-                <p>
-                    Log Compaction:
-                    <strong>Every 60 seconds</strong>
-                </p>
-
+                <p>Storage Mode: <strong>Append-Only Log (AOF)</strong></p>
+                <p>Crash Recovery: <strong>Enabled</strong></p>
+                <p>Log Compaction: <strong>Every 60 seconds</strong></p>
             </div>
 
         </div>
 
-
-        <!-- Stored Data -->
         <div class="card full-width">
+            <h3>Live AOF Log</h3>
+            <p class="muted" style="margin-bottom: 10px;">Watch data persistence and compaction in real-time.</p>
+            <div class="log-terminal" id="logViewer">
+                [System] Establishing connection to stream...
+            </div>
+        </div>
 
+        <div class="card full-width">
             <h3>Stored Data</h3>
-
             {% if store %}
-
             <table class="kv-table">
-
                 <thead>
                     <tr>
                         <th>Key</th>
@@ -159,38 +96,52 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
                 {% for key, value in store.items() %}
                 <tr>
-
                     <td>{{ key }}</td>
                     <td>{{ value }}</td>
-
                     <td>
                         <form method="post" action="/delete">
                             <input type="hidden" name="key" value="{{ key }}">
                             <button class="btn-danger small">Delete</button>
                         </form>
                     </td>
-
                 </tr>
                 {% endfor %}
-
                 </tbody>
-
             </table>
-
             {% else %}
             <p class="muted">No data stored yet.</p>
             {% endif %}
-
         </div>
 
     </main>
-
 </div>
+
+<script>
+    const logViewer = document.getElementById('logViewer');
+
+    if (window.EventSource) {
+        const source = new EventSource('/stream-log');
+
+        source.onmessage = function(event) {
+            // Parse the JSON string sent from the backend
+            const decodedLog = JSON.parse(event.data);
+            logViewer.textContent = decodedLog || "[Log file is empty]";
+            
+            // Auto-scroll to the bottom of the terminal
+            logViewer.scrollTop = logViewer.scrollHeight;
+        };
+
+        source.onerror = function(event) {
+            console.error("SSE connection error.");
+            logViewer.textContent = "[System] Connection lost. Attempting to reconnect...";
+        };
+    } else {
+        logViewer.textContent = "[System] Error: Your browser does not support Server-Sent Events.";
+    }
+</script>
 
 </body>
 </html>
